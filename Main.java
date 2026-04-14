@@ -90,20 +90,28 @@ public class Main extends JFrame {
 
     private void saveData() {
         try {
-            if (name.getText().trim().isEmpty() || roll.getText().trim().isEmpty() || year.getText().trim().isEmpty()) {
+            String nameValue = name.getText().trim();
+            String rollValue = roll.getText().trim();
+            String yearText = year.getText().trim();
+            String branchValue = branch.getText().trim();
+            String emailValue = email.getText().trim();
+            String phoneValue = phone.getText().trim();
+            String jobValue = job.getText().trim();
+
+            if (nameValue.isEmpty() || rollValue.isEmpty() || yearText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Name, Roll No and Year are required");
                 return;
             }
-            int yearValue = Integer.parseInt(year.getText().trim());
+            int yearValue = Integer.parseInt(yearText);
 
             boolean ok = dao.addAlumni(
-                    name.getText().trim(),
-                    roll.getText().trim(),
+                    nameValue,
+                    rollValue,
                     yearValue,
-                    branch.getText().trim(),
-                    email.getText().trim(),
-                    phone.getText().trim(),
-                    job.getText().trim()
+                    branchValue,
+                    emailValue,
+                    phoneValue,
+                    jobValue
             );
 
             JOptionPane.showMessageDialog(this, ok ? "Saved" : "Not saved");
@@ -167,7 +175,7 @@ public class Main extends JFrame {
                 });
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to load data: " + e.getMessage());
         } finally {
             try {
                 rs.close();
