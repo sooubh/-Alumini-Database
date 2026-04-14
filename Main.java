@@ -1,140 +1,131 @@
-import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    private final AlumniDAO dao = new AlumniDAO();
     private final Scanner scanner = new Scanner(System.in);
+    private final List<Employee> employees = new ArrayList<>();
 
     public static void main(String[] args) {
         new Main().run();
     }
 
     private void run() {
-        System.out.println("=== Alumni Database (Terminal) ===");
+        System.out.println("=== Simple Employee Data App ===");
+        int count = readEmployeeCount();
+        inputEmployees(count);
+
         while (true) {
-            printMenu();
+            printViewMenu();
             String choice = scanner.nextLine().trim();
-            switch (choice) {
-                case "1":
-                    addAlumni();
-                    break;
-                case "2":
-                    viewAllAlumni();
-                    break;
-                case "3":
-                    searchAlumni();
-                    break;
-                case "4":
-                    deleteAlumni();
-                    break;
-                case "5":
-                    System.out.println("Exiting...");
-                    return;
-                default:
-                    System.out.println("Invalid choice. Please select 1-5.");
+            if ("1".equals(choice)) {
+                showOneEmployee();
+            } else if ("2".equals(choice)) {
+                showAllEmployees();
+            } else if ("3".equals(choice)) {
+                System.out.println("Exiting...");
+                return;
+            } else {
+                System.out.println("Invalid choice. Please enter 1, 2, or 3.");
             }
         }
     }
 
-    private void printMenu() {
-        System.out.println();
-        System.out.println("1) Add Alumni");
-        System.out.println("2) View All Alumni");
-        System.out.println("3) Search Alumni");
-        System.out.println("4) Delete Alumni");
-        System.out.println("5) Exit");
-        System.out.print("Enter choice: ");
+    private int readEmployeeCount() {
+        while (true) {
+            System.out.print("Enter number of employees: ");
+            String text = scanner.nextLine().trim();
+            try {
+                int count = Integer.parseInt(text);
+                if (count <= 0) {
+                    System.out.println("Please enter a number greater than 0.");
+                } else {
+                    return count;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid whole number.");
+            }
+        }
     }
 
-    private void addAlumni() {
-        try {
+    private void inputEmployees(int count) {
+        for (int i = 1; i <= count; i++) {
+            System.out.println();
+            System.out.println("Enter details for employee " + i + ":");
             System.out.print("Name: ");
             String name = scanner.nextLine().trim();
-            System.out.print("Roll No: ");
-            String rollNo = scanner.nextLine().trim();
-            System.out.print("Year: ");
-            String yearText = scanner.nextLine().trim();
-            System.out.print("Branch: ");
-            String branch = scanner.nextLine().trim();
+            System.out.print("Employee ID: ");
+            String employeeId = scanner.nextLine().trim();
+            System.out.print("Department: ");
+            String department = scanner.nextLine().trim();
             System.out.print("Email: ");
             String email = scanner.nextLine().trim();
             System.out.print("Phone: ");
             String phone = scanner.nextLine().trim();
-            System.out.print("Job: ");
-            String job = scanner.nextLine().trim();
-
-            if (name.isEmpty() || rollNo.isEmpty() || yearText.isEmpty()) {
-                System.out.println("Name, Roll No and Year are required.");
-                return;
-            }
-
-            int year = Integer.parseInt(yearText);
-            boolean ok = dao.addAlumni(name, rollNo, year, branch, email, phone, job);
-            System.out.println(ok ? "Saved successfully." : "Not saved.");
-        } catch (NumberFormatException e) {
-            System.out.println("Enter valid Year.");
-        } catch (Exception e) {
-            System.out.println("Save failed: " + e.getMessage());
+            employees.add(new Employee(name, employeeId, department, email, phone));
         }
     }
 
-    private void viewAllAlumni() {
-        printAlumniResultSet(dao.getAllAlumni());
+    private void printViewMenu() {
+        System.out.println();
+        System.out.println("Choose an option:");
+        System.out.println("1) Show one employee by number");
+        System.out.println("2) Show all employee data");
+        System.out.println("3) Exit");
+        System.out.print("Enter choice: ");
     }
 
-    private void searchAlumni() {
-        System.out.print("Enter keyword: ");
-        String keyword = scanner.nextLine().trim();
-        printAlumniResultSet(dao.searchAlumni(keyword));
+    private void showOneEmployee() {
+        int index = readEmployeeIndex();
+        printEmployee(index + 1, employees.get(index));
     }
 
-    private void deleteAlumni() {
-        try {
-            System.out.print("Enter ID to delete: ");
-            int id = Integer.parseInt(scanner.nextLine().trim());
-            boolean ok = dao.deleteAlumni(id);
-            System.out.println(ok ? "Deleted successfully." : "Not deleted.");
-        } catch (NumberFormatException e) {
-            System.out.println("Enter a valid numeric ID.");
-        } catch (Exception e) {
-            System.out.println("Delete failed: " + e.getMessage());
-        }
-    }
-
-    private void printAlumniResultSet(ResultSet rs) {
-        if (rs == null) {
-            System.out.println("No data found or query failed.");
-            return;
-        }
-
-        try {
-            boolean hasRows = false;
-            System.out.printf("%-4s %-20s %-12s %-6s %-12s %-25s %-15s %-20s%n",
-                    "ID", "Name", "Roll No", "Year", "Branch", "Email", "Phone", "Job");
-            System.out.println("------------------------------------------------------------------------------------------------------------------------");
-            while (rs.next()) {
-                hasRows = true;
-                System.out.printf("%-4d %-20s %-12s %-6d %-12s %-25s %-15s %-20s%n",
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("roll_no"),
-                        rs.getInt("year"),
-                        rs.getString("branch"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        rs.getString("job")
-                );
-            }
-            if (!hasRows) {
-                System.out.println("No records found.");
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to load data: " + e.getMessage());
-        } finally {
+    private int readEmployeeIndex() {
+        while (true) {
+            System.out.print("Enter employee number (1 to " + employees.size() + "): ");
+            String text = scanner.nextLine().trim();
             try {
-                rs.close();
-            } catch (Exception ignored) {
+                int number = Integer.parseInt(text);
+                if (number < 1 || number > employees.size()) {
+                    System.out.println("Please enter a number in range.");
+                } else {
+                    return number - 1;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid whole number.");
             }
+        }
+    }
+
+    private void showAllEmployees() {
+        for (int i = 0; i < employees.size(); i++) {
+            printEmployee(i + 1, employees.get(i));
+        }
+    }
+
+    private void printEmployee(int number, Employee employee) {
+        System.out.println();
+        System.out.println("Employee " + number + ":");
+        System.out.println("Name: " + employee.name);
+        System.out.println("Employee ID: " + employee.employeeId);
+        System.out.println("Department: " + employee.department);
+        System.out.println("Email: " + employee.email);
+        System.out.println("Phone: " + employee.phone);
+    }
+
+    private static class Employee {
+        private final String name;
+        private final String employeeId;
+        private final String department;
+        private final String email;
+        private final String phone;
+
+        private Employee(String name, String employeeId, String department, String email, String phone) {
+            this.name = name;
+            this.employeeId = employeeId;
+            this.department = department;
+            this.email = email;
+            this.phone = phone;
         }
     }
 }

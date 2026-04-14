@@ -1,48 +1,24 @@
-# Alumni Database (Simple Java + MySQL)
+# Simple Employee Input App (Java)
 
-Very simple alumni database project with:
-- SQL schema
-- Java DB connection
-- Java DAO (add/view/search/delete)
-- Java terminal app (CLI)
+This project is now a very simple Java terminal app with **no SQL database**.
 
-## Files
-- `schema.sql`
-- `DBConnection.java`
-- `AlumniDAO.java`
-- `Main.java`
+You enter:
+1. Number of employees
+2. Details for each employee one by one
 
-## 1) Create database
-Run `schema.sql` in MySQL.
+Then you can choose to:
+- Show one employee by number
+- Show all employee data
 
-## 2) Database configuration (optional)
-You can set environment variables:
-- `ALUMNI_DB_URL` (default: `jdbc:mysql://localhost:3306/alumni_db`)
-- `ALUMNI_DB_USER` (default: `root`)
-- `ALUMNI_DB_PASS` (default: `root`)
+## File
+- `Main.java` (single source file)
 
-## 3) Compile
-Make sure MySQL JDBC jar is available (example: `mysql-connector-j-8.4.0.jar`).
-
-Linux/macOS:
+## Compile
 ```bash
-javac -cp .:mysql-connector-j-8.4.0.jar DBConnection.java AlumniDAO.java Main.java
+javac Main.java
 ```
 
-Windows:
-```bat
-javac -cp .;mysql-connector-j-8.4.0.jar DBConnection.java AlumniDAO.java Main.java
-```
-
-## 4) Run
-Linux/macOS:
+## Run
 ```bash
-java -cp .:mysql-connector-j-8.4.0.jar Main
+java Main
 ```
-
-Windows:
-```bat
-java -cp .;mysql-connector-j-8.4.0.jar Main
-```
-
-The app runs fully in terminal with menu options for add, view, search, and delete.
