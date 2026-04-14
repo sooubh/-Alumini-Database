@@ -52,10 +52,8 @@ public class Main {
         for (int i = 1; i <= count; i++) {
             System.out.println();
             System.out.println("Enter details for employee " + i + ":");
-            System.out.print("Name: ");
-            String name = scanner.nextLine().trim();
-            System.out.print("Employee ID: ");
-            String employeeId = scanner.nextLine().trim();
+            String name = readRequiredField("Name");
+            String employeeId = readRequiredField("Employee ID");
             System.out.print("Department: ");
             String department = scanner.nextLine().trim();
             System.out.print("Email: ");
@@ -63,6 +61,17 @@ public class Main {
             System.out.print("Phone: ");
             String phone = scanner.nextLine().trim();
             employees.add(new Employee(name, employeeId, department, email, phone));
+        }
+    }
+
+    private String readRequiredField(String label) {
+        while (true) {
+            System.out.print(label + ": ");
+            String value = scanner.nextLine().trim();
+            if (!value.isEmpty()) {
+                return value;
+            }
+            System.out.println(label + " is required.");
         }
     }
 
