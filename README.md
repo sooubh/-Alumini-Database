@@ -4,7 +4,7 @@ Very simple alumni database project with:
 - SQL schema
 - Java DB connection
 - Java DAO (add/view/search/delete)
-- Java Swing UI
+- Java terminal app (CLI)
 
 ## Files
 - `schema.sql`
@@ -44,3 +44,5 @@ Windows:
 ```bat
 java -cp .;mysql-connector-j-8.4.0.jar Main
 ```
+
+The app runs fully in terminal with menu options for add, view, search, and delete.
