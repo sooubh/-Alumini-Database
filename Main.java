@@ -94,11 +94,12 @@ public class Main extends JFrame {
                 JOptionPane.showMessageDialog(this, "Name, Roll No and Year are required");
                 return;
             }
+            int yearValue = Integer.parseInt(year.getText().trim());
 
             boolean ok = dao.addAlumni(
                     name.getText().trim(),
                     roll.getText().trim(),
-                    Integer.parseInt(year.getText().trim()),
+                    yearValue,
                     branch.getText().trim(),
                     email.getText().trim(),
                     phone.getText().trim(),
@@ -116,8 +117,10 @@ public class Main extends JFrame {
                 job.setText("");
                 loadAll();
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Enter valid Year");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Save failed: " + e.getMessage());
         }
     }
 
