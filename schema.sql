@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS alumni_db;
+USE alumni_db;
+
+CREATE TABLE IF NOT EXISTS alumni (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  roll_no VARCHAR(20),
+  year INT,
+  branch VARCHAR(50),
+  email VARCHAR(100),
+  phone VARCHAR(20),
+  job VARCHAR(100)
+);
