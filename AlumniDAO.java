@@ -1,6 +1,8 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetProvider;
 
 public class AlumniDAO {
     public boolean addAlumni(String name, String rollNo, int year, String branch, String email, String phone, String job) {
@@ -22,10 +24,13 @@ public class AlumniDAO {
     }
 
     public ResultSet getAllAlumni() {
-        try {
-            Connection con = DBConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM alumni ORDER BY id DESC");
-            return ps.executeQuery();
+        String sql = "SELECT * FROM alumni ORDER BY id DESC";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            CachedRowSet rowSet = RowSetProvider.newFactory().createCachedRowSet();
+            rowSet.populate(rs);
+            return rowSet;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -34,14 +39,17 @@ public class AlumniDAO {
 
     public ResultSet searchAlumni(String keyword) {
         String sql = "SELECT * FROM alumni WHERE name LIKE ? OR roll_no LIKE ? OR branch LIKE ? OR email LIKE ? OR phone LIKE ? OR job LIKE ? OR CAST(year AS CHAR) LIKE ? ORDER BY id DESC";
-        try {
-            Connection con = DBConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (Connection con = DBConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
             String k = "%" + keyword + "%";
             for (int i = 1; i <= 7; i++) {
                 ps.setString(i, k);
             }
-            return ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                CachedRowSet rowSet = RowSetProvider.newFactory().createCachedRowSet();
+                rowSet.populate(rs);
+                return rowSet;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return null;

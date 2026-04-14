@@ -7,16 +7,19 @@ Very simple alumni database project with:
 - Java Swing UI
 
 ## Files
-- `/home/runner/work/-Alumini-Database/-Alumini-Database/schema.sql`
-- `/home/runner/work/-Alumini-Database/-Alumini-Database/DBConnection.java`
-- `/home/runner/work/-Alumini-Database/-Alumini-Database/AlumniDAO.java`
-- `/home/runner/work/-Alumini-Database/-Alumini-Database/Main.java`
+- `schema.sql`
+- `DBConnection.java`
+- `AlumniDAO.java`
+- `Main.java`
 
 ## 1) Create database
 Run `schema.sql` in MySQL.
 
-## 2) Update DB credentials
-Edit username/password in `DBConnection.java` if needed.
+## 2) Database configuration (optional)
+You can set environment variables:
+- `ALUMNI_DB_URL` (default: `jdbc:mysql://localhost:3306/alumni_db`)
+- `ALUMNI_DB_USER` (default: `root`)
+- `ALUMNI_DB_PASS` (default: `root`)
 
 ## 3) Compile
 Make sure MySQL JDBC jar is available (example: `mysql-connector-j-8.4.0.jar`).

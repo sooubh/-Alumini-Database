@@ -1,9 +1,7 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class Main extends JFrame {
     private final AlumniDAO dao = new AlumniDAO();
@@ -152,8 +150,6 @@ public class Main extends JFrame {
             return;
         }
 
-        Statement st = null;
-        Connection con = null;
         try {
             while (rs.next()) {
                 model.addRow(new Object[]{
@@ -167,27 +163,11 @@ public class Main extends JFrame {
                         rs.getString("job")
                 });
             }
-            st = rs.getStatement();
-            if (st != null) {
-                con = st.getConnection();
-            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
                 rs.close();
-            } catch (Exception ignored) {
-            }
-            try {
-                if (st != null) {
-                    st.close();
-                }
-            } catch (Exception ignored) {
-            }
-            try {
-                if (con != null) {
-                    con.close();
-                }
             } catch (Exception ignored) {
             }
         }
