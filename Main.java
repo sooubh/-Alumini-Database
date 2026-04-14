@@ -1,169 +1,120 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.sql.ResultSet;
+import java.util.Scanner;
 
-public class Main extends JFrame {
+public class Main {
     private final AlumniDAO dao = new AlumniDAO();
+    private final Scanner scanner = new Scanner(System.in);
 
-    private final JTextField name = new JTextField();
-    private final JTextField roll = new JTextField();
-    private final JTextField year = new JTextField();
-    private final JTextField branch = new JTextField();
-    private final JTextField email = new JTextField();
-    private final JTextField phone = new JTextField();
-    private final JTextField job = new JTextField();
-    private final JTextField searchField = new JTextField();
-
-    private final JTable viewTable = new JTable();
-    private final JTable searchTable = new JTable();
-
-    public Main() {
-        setTitle("Alumni Database");
-        setSize(900, 600);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.add("Add", addTab());
-        tabs.add("View", viewTab());
-        tabs.add("Search", searchTab());
-        setContentPane(tabs);
-
-        loadAll();
+    public static void main(String[] args) {
+        new Main().run();
     }
 
-    private JPanel addTab() {
-        JPanel p = new JPanel(new GridLayout(8, 2, 8, 8));
-        p.setBorder(BorderFactory.createEmptyBorder(20, 120, 20, 120));
-        addRow(p, "Name", name);
-        addRow(p, "Roll No", roll);
-        addRow(p, "Year", year);
-        addRow(p, "Branch", branch);
-        addRow(p, "Email", email);
-        addRow(p, "Phone", phone);
-        addRow(p, "Job", job);
-        JButton save = new JButton("Save");
-        save.addActionListener(e -> saveData());
-        p.add(new JLabel(""));
-        p.add(save);
-        return p;
+    private void run() {
+        System.out.println("=== Alumni Database (Terminal) ===");
+        while (true) {
+            printMenu();
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1":
+                    addAlumni();
+                    break;
+                case "2":
+                    viewAllAlumni();
+                    break;
+                case "3":
+                    searchAlumni();
+                    break;
+                case "4":
+                    deleteAlumni();
+                    break;
+                case "5":
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please select 1-5.");
+            }
+        }
     }
 
-    private JPanel viewTab() {
-        JPanel p = new JPanel(new BorderLayout(8, 8));
-        styleTable(viewTable);
-        p.add(new JScrollPane(viewTable), BorderLayout.CENTER);
-
-        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton refresh = new JButton("Refresh");
-        JButton delete = new JButton("Delete");
-        refresh.addActionListener(e -> loadAll());
-        delete.addActionListener(e -> deleteSelected());
-        actions.add(refresh);
-        actions.add(delete);
-        p.add(actions, BorderLayout.SOUTH);
-        return p;
+    private void printMenu() {
+        System.out.println();
+        System.out.println("1) Add Alumni");
+        System.out.println("2) View All Alumni");
+        System.out.println("3) Search Alumni");
+        System.out.println("4) Delete Alumni");
+        System.out.println("5) Exit");
+        System.out.print("Enter choice: ");
     }
 
-    private JPanel searchTab() {
-        JPanel p = new JPanel(new BorderLayout(8, 8));
-        JPanel top = new JPanel(new BorderLayout(8, 8));
-        JButton searchBtn = new JButton("Search");
-        searchBtn.addActionListener(e -> searchData());
-        top.add(searchField, BorderLayout.CENTER);
-        top.add(searchBtn, BorderLayout.EAST);
-        p.add(top, BorderLayout.NORTH);
-        styleTable(searchTable);
-        p.add(new JScrollPane(searchTable), BorderLayout.CENTER);
-        return p;
-    }
-
-    private void addRow(JPanel p, String label, JTextField field) {
-        p.add(new JLabel(label));
-        p.add(field);
-    }
-
-    private void styleTable(JTable table) {
-        table.setModel(new DefaultTableModel(new Object[]{"ID", "Name", "Roll No", "Year", "Branch", "Email", "Phone", "Job"}, 0));
-    }
-
-    private void saveData() {
+    private void addAlumni() {
         try {
-            String nameValue = name.getText().trim();
-            String rollValue = roll.getText().trim();
-            String yearText = year.getText().trim();
-            String branchValue = branch.getText().trim();
-            String emailValue = email.getText().trim();
-            String phoneValue = phone.getText().trim();
-            String jobValue = job.getText().trim();
+            System.out.print("Name: ");
+            String name = scanner.nextLine().trim();
+            System.out.print("Roll No: ");
+            String rollNo = scanner.nextLine().trim();
+            System.out.print("Year: ");
+            String yearText = scanner.nextLine().trim();
+            System.out.print("Branch: ");
+            String branch = scanner.nextLine().trim();
+            System.out.print("Email: ");
+            String email = scanner.nextLine().trim();
+            System.out.print("Phone: ");
+            String phone = scanner.nextLine().trim();
+            System.out.print("Job: ");
+            String job = scanner.nextLine().trim();
 
-            if (nameValue.isEmpty() || rollValue.isEmpty() || yearText.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Name, Roll No and Year are required");
+            if (name.isEmpty() || rollNo.isEmpty() || yearText.isEmpty()) {
+                System.out.println("Name, Roll No and Year are required.");
                 return;
             }
-            int yearValue = Integer.parseInt(yearText);
 
-            boolean ok = dao.addAlumni(
-                    nameValue,
-                    rollValue,
-                    yearValue,
-                    branchValue,
-                    emailValue,
-                    phoneValue,
-                    jobValue
-            );
-
-            JOptionPane.showMessageDialog(this, ok ? "Saved" : "Not saved");
-            if (ok) {
-                name.setText("");
-                roll.setText("");
-                year.setText("");
-                branch.setText("");
-                email.setText("");
-                phone.setText("");
-                job.setText("");
-                loadAll();
-            }
+            int year = Integer.parseInt(yearText);
+            boolean ok = dao.addAlumni(name, rollNo, year, branch, email, phone, job);
+            System.out.println(ok ? "Saved successfully." : "Not saved.");
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Enter valid Year");
+            System.out.println("Enter valid Year.");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Save failed: " + e.getMessage());
+            System.out.println("Save failed: " + e.getMessage());
         }
     }
 
-    private void loadAll() {
-        fillTable(viewTable, dao.getAllAlumni());
+    private void viewAllAlumni() {
+        printAlumniResultSet(dao.getAllAlumni());
     }
 
-    private void searchData() {
-        fillTable(searchTable, dao.searchAlumni(searchField.getText().trim()));
+    private void searchAlumni() {
+        System.out.print("Enter keyword: ");
+        String keyword = scanner.nextLine().trim();
+        printAlumniResultSet(dao.searchAlumni(keyword));
     }
 
-    private void deleteSelected() {
-        int row = viewTable.getSelectedRow();
-        if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Select a row first");
-            return;
+    private void deleteAlumni() {
+        try {
+            System.out.print("Enter ID to delete: ");
+            int id = Integer.parseInt(scanner.nextLine().trim());
+            boolean ok = dao.deleteAlumni(id);
+            System.out.println(ok ? "Deleted successfully." : "Not deleted.");
+        } catch (NumberFormatException e) {
+            System.out.println("Enter a valid numeric ID.");
+        } catch (Exception e) {
+            System.out.println("Delete failed: " + e.getMessage());
         }
-        int id = Integer.parseInt(viewTable.getValueAt(row, 0).toString());
-        boolean ok = dao.deleteAlumni(id);
-        JOptionPane.showMessageDialog(this, ok ? "Deleted" : "Not deleted");
-        if (ok) {
-            loadAll();
-        }
     }
 
-    private void fillTable(JTable table, ResultSet rs) {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setRowCount(0);
+    private void printAlumniResultSet(ResultSet rs) {
         if (rs == null) {
+            System.out.println("No data found or query failed.");
             return;
         }
 
         try {
+            boolean hasRows = false;
+            System.out.printf("%-4s %-20s %-12s %-6s %-12s %-25s %-15s %-20s%n",
+                    "ID", "Name", "Roll No", "Year", "Branch", "Email", "Phone", "Job");
+            System.out.println("------------------------------------------------------------------------------------------------------------------------");
             while (rs.next()) {
-                model.addRow(new Object[]{
+                hasRows = true;
+                System.out.printf("%-4d %-20s %-12s %-6d %-12s %-25s %-15s %-20s%n",
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("roll_no"),
@@ -172,19 +123,18 @@ public class Main extends JFrame {
                         rs.getString("email"),
                         rs.getString("phone"),
                         rs.getString("job")
-                });
+                );
+            }
+            if (!hasRows) {
+                System.out.println("No records found.");
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Failed to load data: " + e.getMessage());
+            System.out.println("Failed to load data: " + e.getMessage());
         } finally {
             try {
                 rs.close();
             } catch (Exception ignored) {
             }
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Main().setVisible(true));
     }
 }
